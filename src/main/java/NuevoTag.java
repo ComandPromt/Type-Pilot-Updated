@@ -1,7 +1,11 @@
 
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
@@ -29,6 +33,7 @@ public class NuevoTag extends javax.swing.JFrame implements ActionListener, Chan
 	JTextArea texto;
 
 	public NuevoTag() {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(NuevoTag.class.getResource("/imagenes/ico.png")));
 
 		setAlwaysOnTop(true);
 
@@ -52,6 +57,94 @@ public class NuevoTag extends javax.swing.JFrame implements ActionListener, Chan
 
 	}
 
+	public void guardar() {
+
+		try {
+
+			if (atajo.getText().isEmpty() || texto.getText().isEmpty()) {
+				ponerMensajeAlerta("Por favor, rellena el campo del atajo y del texto", 3);
+			}
+
+			else {
+
+				String hotkey = Metodos.eliminarEspacios(atajo.getText());
+
+				if (!Main.getAtajos().contains(hotkey)) {
+
+					ArrayList<Objeto> arrayList1 = new ArrayList<Objeto>();
+
+					ArrayList<Objeto> arrayList2 = null;
+
+					arrayList2 = Metodos.leer(Main.getDirectorioActual() + Main.separador + "atajos.dat");
+
+					if (arrayList2 != null) {
+
+						for (int i = 0; i < arrayList2.size(); i++) {
+
+							arrayList1.add(arrayList2.get(i));
+						}
+
+					}
+
+					ObjectOutputStream escribiendoFichero = new ObjectOutputStream(
+							new FileOutputStream(Main.directorioActual + Main.separador + "atajos.dat"));
+
+					arrayList1.add(new Objeto(hotkey));
+
+					escribiendoFichero.writeObject(arrayList1);
+
+					escribiendoFichero.close();
+
+					arrayList1.clear();
+
+					if (arrayList2 != null) {
+
+						arrayList2.clear();
+					}
+
+					arrayList2 = Metodos.leer(Main.getDirectorioActual() + Main.separador + "textos_atajos.dat");
+
+					if (arrayList2 != null) {
+
+						for (int i = 0; i < arrayList2.size(); i++) {
+
+							arrayList1.add(arrayList2.get(i));
+						}
+
+					}
+
+					escribiendoFichero = new ObjectOutputStream(
+							new FileOutputStream(Main.directorioActual + Main.separador + "textos_atajos.dat"));
+
+					arrayList1.add(new Objeto(texto.getText()));
+
+					escribiendoFichero.writeObject(arrayList1);
+
+					escribiendoFichero.close();
+
+					Main.inicializar();
+
+				}
+
+				else {
+
+					ponerMensajeAlerta("El atajo \"" + hotkey + "\" ya está creado", 1);
+
+				}
+
+				atajo.setText("");
+
+				texto.setText("");
+
+			}
+		}
+
+		catch (Exception e) {
+
+		}
+
+	}
+
 	private void initComponents() {
 
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -66,90 +159,7 @@ public class NuevoTag extends javax.swing.JFrame implements ActionListener, Chan
 
 			public void actionPerformed(ActionEvent arg0) {
 
-				try {
-
-					if (atajo.getText().isEmpty() || texto.getText().isEmpty()) {
-						ponerMensajeAlerta("Por favor, rellena el campo del atajo y del texto", 3);
-					}
-
-					else {
-
-						String hotkey = Metodos.eliminarEspacios(atajo.getText());
-
-						if (!Main.getAtajos().contains(hotkey)) {
-
-							ArrayList<Objeto> arrayList1 = new ArrayList<Objeto>();
-
-							ArrayList<Objeto> arrayList2 = null;
-
-							arrayList2 = Metodos.leer(Main.getDirectorioActual() + Main.separador + "atajos.dat");
-
-							if (arrayList2 != null) {
-
-								for (int i = 0; i < arrayList2.size(); i++) {
-
-									arrayList1.add(arrayList2.get(i));
-								}
-
-							}
-
-							ObjectOutputStream escribiendoFichero = new ObjectOutputStream(
-									new FileOutputStream(Main.directorioActual + Main.separador + "atajos.dat"));
-
-							arrayList1.add(new Objeto(hotkey));
-
-							escribiendoFichero.writeObject(arrayList1);
-
-							escribiendoFichero.close();
-
-							arrayList1.clear();
-
-							if (arrayList2 != null) {
-
-								arrayList2.clear();
-							}
-
-							arrayList2 = Metodos
-									.leer(Main.getDirectorioActual() + Main.separador + "textos_atajos.dat");
-
-							if (arrayList2 != null) {
-
-								for (int i = 0; i < arrayList2.size(); i++) {
-
-									arrayList1.add(arrayList2.get(i));
-								}
-
-							}
-
-							escribiendoFichero = new ObjectOutputStream(
-									new FileOutputStream(Main.directorioActual + Main.separador + "textos_atajos.dat"));
-
-							arrayList1.add(new Objeto(texto.getText()));
-
-							escribiendoFichero.writeObject(arrayList1);
-
-							escribiendoFichero.close();
-
-							Main.inicializar();
-
-						}
-
-						else {
-
-							ponerMensajeAlerta("El atajo \"" + hotkey + "\" ya está creado", 1);
-
-						}
-
-						atajo.setText("");
-
-						texto.setText("");
-
-					}
-				}
-
-				catch (Exception e) {
-					e.printStackTrace();
-				}
+				guardar();
 
 			}
 
@@ -158,8 +168,26 @@ public class NuevoTag extends javax.swing.JFrame implements ActionListener, Chan
 		btnNewButton.setIcon(new ImageIcon(NuevoTag.class.getResource("/imagenes/save.png")));
 
 		texto = new JTextArea();
+		texto.setFont(new Font("Dialog", Font.PLAIN, 16));
+
+		texto.addKeyListener(new KeyAdapter() {
+
+			@Override
+
+			public void keyPressed(KeyEvent e) {
+
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+
+					guardar();
+
+				}
+			}
+
+		});
 
 		atajo = new JTextField();
+
+		atajo.setFont(new Font("Dialog", Font.PLAIN, 16));
 
 		atajo.setHorizontalAlignment(SwingConstants.CENTER);
 

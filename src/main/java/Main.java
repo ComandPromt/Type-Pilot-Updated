@@ -1,6 +1,7 @@
 
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -8,7 +9,9 @@ import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -53,7 +56,13 @@ public class Main extends javax.swing.JFrame implements ActionListener, ChangeLi
 
 	static JComboBox comboBox = new JComboBox();
 
+	public static JComboBox getComboBox() {
+		return comboBox;
+	}
+
 	private static NuevoTag nt;
+
+	private static EditTag edit;
 
 	private void ponerTexto(String texto) {
 
@@ -128,6 +137,7 @@ public class Main extends javax.swing.JFrame implements ActionListener, ChangeLi
 	}
 
 	public Main() throws IOException {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(Main.class.getResource("/imagenes/ico.png")));
 
 		setTitle("Type Pilot Updated");
 
@@ -180,7 +190,7 @@ public class Main extends javax.swing.JFrame implements ActionListener, ChangeLi
 			}
 		});
 
-		comboBox.setFont(new Font("Dialog", Font.BOLD, 16));
+		comboBox.setFont(new Font("Dialog", Font.PLAIN, 16));
 
 		directorioActual = new File(".").getCanonicalPath();
 
@@ -188,13 +198,34 @@ public class Main extends javax.swing.JFrame implements ActionListener, ChangeLi
 
 		JButton btnNewButton = new JButton("");
 
+		btnNewButton.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent arg0) {
+
+				if (!(edit instanceof EditTag)) {
+
+					new EditTag().setVisible(true);
+
+				}
+
+			}
+
+		});
+
 		btnNewButton.setIcon(new ImageIcon(Main.class.getResource("/imagenes/edit_1.png")));
 
 		JButton btnNewButton_1 = new JButton("");
+
 		btnNewButton_1.addActionListener(new ActionListener() {
+
 			public void actionPerformed(ActionEvent arg0) {
-				Metodos.copy(Metodos.eliminarEspacios(salida.getText()));
+
+				if (!salida.getText().isEmpty()) {
+					Metodos.copy(Metodos.eliminarEspacios(salida.getText()));
+				}
+
 			}
+
 		});
 
 		btnNewButton_1.setIcon(new ImageIcon(Main.class.getResource("/imagenes/copy.png")));
@@ -205,10 +236,14 @@ public class Main extends javax.swing.JFrame implements ActionListener, ChangeLi
 
 			public void actionPerformed(ActionEvent arg0) {
 
-				int resp = JOptionPane.showConfirmDialog(null, "¿Estás seguro de limpiar el texto?");
+				if (!salida.getText().isEmpty()) {
 
-				if (resp == 0) {
-					salida.setText("");
+					int resp = JOptionPane.showConfirmDialog(null, "¿Estás seguro de limpiar el texto?");
+
+					if (resp == 0) {
+						salida.setText("");
+					}
+
 				}
 
 			}
@@ -227,16 +262,113 @@ public class Main extends javax.swing.JFrame implements ActionListener, ChangeLi
 
 			public void actionPerformed(ActionEvent arg0) {
 
-				nt = new NuevoTag();
+				if (!(nt instanceof NuevoTag)) {
 
-				nt.setVisible(true);
+					nt = new NuevoTag();
+
+					nt.setVisible(true);
+				}
 
 			}
 
 		});
 
 		JButton btnNewButton_2 = new JButton("");
+
+		btnNewButton_2.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent arg0) {
+
+				try {
+
+					String atajo = comboBox.getSelectedItem().toString();
+
+					int indice = -1;
+
+					ArrayList<Objeto> arrayList1 = new ArrayList<Objeto>();
+
+					ArrayList<Objeto> arrayList2 = new ArrayList<Objeto>();
+
+					int resp = JOptionPane.showConfirmDialog(null,
+							"¿Quieres eliminar el atajo llamado \"" + atajo + "\"?");
+
+					if (resp == 0) {
+
+						arrayList2 = Metodos.leer(Main.getDirectorioActual() + Main.separador + "atajos.dat");
+
+						for (int i = 0; i < arrayList2.size(); i++) {
+
+							if (!arrayList2.get(i).toString().equals(atajo)) {
+								arrayList1.add(arrayList2.get(i));
+
+							} else {
+								indice = i;
+							}
+						}
+
+						ObjectOutputStream escribiendoFichero = new ObjectOutputStream(
+								new FileOutputStream(Main.directorioActual + Main.separador + "atajos.dat"));
+
+						escribiendoFichero.writeObject(arrayList1);
+
+						escribiendoFichero.close();
+
+						arrayList1.clear();
+
+						arrayList2.clear();
+
+						arrayList2 = Metodos.leer(Main.getDirectorioActual() + Main.separador + "textos_atajos.dat");
+
+						arrayList2.remove(indice);
+
+						for (int i = 0; i < arrayList2.size(); i++) {
+
+							arrayList1.add(arrayList2.get(i));
+
+						}
+
+						escribiendoFichero = new ObjectOutputStream(
+								new FileOutputStream(Main.directorioActual + Main.separador + "textos_atajos.dat"));
+
+						escribiendoFichero.writeObject(arrayList1);
+
+						escribiendoFichero.close();
+
+						inicializar();
+
+					}
+
+				}
+
+				catch (Exception e) {
+
+				}
+
+			}
+
+		});
+
 		btnNewButton_2.setIcon(new ImageIcon(Main.class.getResource("/imagenes/delete.png")));
+
+		JButton btnNewButton_1_1_1 = new JButton("");
+
+		btnNewButton_1_1_1.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent arg0) {
+
+				if (!textField.getText().isEmpty()) {
+					int resp = JOptionPane.showConfirmDialog(null, "¿Estás seguro de limpiar el atajo?");
+
+					if (resp == 0) {
+						textField.setText("");
+					}
+				}
+
+			}
+
+		});
+
+		btnNewButton_1_1_1.setIcon(new ImageIcon(Main.class.getResource("/imagenes/clean.png")));
 
 		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
 		layout.setHorizontalGroup(layout.createParallelGroup(Alignment.TRAILING)
@@ -248,7 +380,7 @@ public class Main extends javax.swing.JFrame implements ActionListener, ChangeLi
 												.addComponent(textField, Alignment.LEADING).addComponent(scrollPane,
 														Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 388,
 														Short.MAX_VALUE))
-								.addGroup(layout.createSequentialGroup().addComponent(comboBox, 0, 251, Short.MAX_VALUE)
+								.addGroup(layout.createSequentialGroup().addComponent(comboBox, 0, 257, Short.MAX_VALUE)
 										.addGap(18)
 										.addComponent(btnAdd, GroupLayout.PREFERRED_SIZE, 49,
 												GroupLayout.PREFERRED_SIZE)
@@ -256,16 +388,17 @@ public class Main extends javax.swing.JFrame implements ActionListener, ChangeLi
 										.addComponent(btnNewButton, GroupLayout.PREFERRED_SIZE, 52,
 												GroupLayout.PREFERRED_SIZE)
 										.addPreferredGap(ComponentPlacement.RELATED)))
-						.addGroup(layout.createParallelGroup(Alignment.LEADING).addGroup(layout.createSequentialGroup()
-								.addGap(28)
-								.addGroup(layout.createParallelGroup(Alignment.LEADING, false)
-										.addComponent(btnNewButton_1_1, 0, 0, Short.MAX_VALUE)
-										.addComponent(btnNewButton_1, GroupLayout.PREFERRED_SIZE, 49, Short.MAX_VALUE)))
-								.addGroup(layout.createSequentialGroup().addGap(18).addComponent(btnNewButton_2,
-										GroupLayout.PREFERRED_SIZE, 51, GroupLayout.PREFERRED_SIZE)))
+						.addGap(18)
+						.addGroup(layout.createParallelGroup(Alignment.LEADING, false)
+								.addComponent(btnNewButton_1_1, 0, 0, Short.MAX_VALUE)
+								.addComponent(btnNewButton_1_1_1, Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 49,
+										GroupLayout.PREFERRED_SIZE)
+								.addComponent(btnNewButton_2, GroupLayout.PREFERRED_SIZE, 51, Short.MAX_VALUE)
+								.addComponent(btnNewButton_1, 0, 0, Short.MAX_VALUE))
 						.addGap(21)));
-		layout.setVerticalGroup(layout.createParallelGroup(Alignment.LEADING)
-				.addGroup(layout.createSequentialGroup().addGap(34)
+		layout.setVerticalGroup(layout.createParallelGroup(Alignment.LEADING).addGroup(layout.createSequentialGroup()
+				.addGroup(layout.createParallelGroup(Alignment.LEADING).addGroup(layout.createSequentialGroup()
+						.addGap(34)
 						.addGroup(layout.createParallelGroup(Alignment.LEADING)
 								.addComponent(comboBox, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
 								.addComponent(btnAdd, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
@@ -278,15 +411,18 @@ public class Main extends javax.swing.JFrame implements ActionListener, ChangeLi
 						.addGroup(layout.createParallelGroup(Alignment.LEADING)
 								.addGroup(layout.createSequentialGroup().addGap(18).addComponent(scrollPane,
 										GroupLayout.PREFERRED_SIZE, 211, GroupLayout.PREFERRED_SIZE))
-								.addGroup(layout.createSequentialGroup().addGap(50)
+								.addGroup(layout.createSequentialGroup().addGap(49)
 										.addComponent(btnNewButton_1, GroupLayout.PREFERRED_SIZE, 63,
 												GroupLayout.PREFERRED_SIZE)
-										.addGap(34).addComponent(btnNewButton_1_1, GroupLayout.PREFERRED_SIZE, 47,
-												GroupLayout.PREFERRED_SIZE)))
-						.addGap(29)));
+										.addGap(38).addComponent(btnNewButton_1_1, GroupLayout.PREFERRED_SIZE, 47,
+												GroupLayout.PREFERRED_SIZE))))
+						.addGroup(layout.createSequentialGroup().addGap(100).addComponent(btnNewButton_1_1_1,
+								GroupLayout.PREFERRED_SIZE, 47, GroupLayout.PREFERRED_SIZE)))
+				.addContainerGap(29, Short.MAX_VALUE)));
 		salida.setFont(new Font("Dialog", Font.PLAIN, 16));
 
 		scrollPane.setViewportView(salida);
+
 		getContentPane().setLayout(layout);
 		setSize(new Dimension(509, 429));
 		setLocationRelativeTo(null);
