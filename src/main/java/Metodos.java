@@ -59,6 +59,8 @@ public abstract class Metodos {
 
 	}
 
+	@SuppressWarnings({ "unchecked" })
+
 	public static ArrayList<Objeto> leer(String file)
 			throws IOException, FileNotFoundException, ClassNotFoundException {
 

@@ -33,6 +33,7 @@ public class NuevoTag extends javax.swing.JFrame implements ActionListener, Chan
 	JTextArea texto;
 
 	public NuevoTag() {
+
 		setIconImage(Toolkit.getDefaultToolkit().getImage(NuevoTag.class.getResource("/imagenes/ico.png")));
 
 		setAlwaysOnTop(true);
@@ -229,12 +230,11 @@ public class NuevoTag extends javax.swing.JFrame implements ActionListener, Chan
 	}
 
 	public void stateChanged(ChangeEvent e) {
-		// TODO Auto-generated method stub
 
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
 
 	}
+
 }
