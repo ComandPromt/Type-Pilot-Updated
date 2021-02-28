@@ -137,6 +137,7 @@ public class Main extends javax.swing.JFrame implements ActionListener, ChangeLi
 	}
 
 	public Main() throws IOException {
+
 		setIconImage(Toolkit.getDefaultToolkit().getImage(Main.class.getResource("/imagenes/ico.png")));
 
 		setTitle("Type Pilot Updated");
@@ -202,11 +203,7 @@ public class Main extends javax.swing.JFrame implements ActionListener, ChangeLi
 
 			public void actionPerformed(ActionEvent arg0) {
 
-				if (!(edit instanceof EditTag)) {
-
-					new EditTag().setVisible(true);
-
-				}
+				new EditTag().setVisible(true);
 
 			}
 
@@ -262,12 +259,9 @@ public class Main extends javax.swing.JFrame implements ActionListener, ChangeLi
 
 			public void actionPerformed(ActionEvent arg0) {
 
-				if (!(nt instanceof NuevoTag)) {
+				nt = new NuevoTag();
 
-					nt = new NuevoTag();
-
-					nt.setVisible(true);
-				}
+				nt.setVisible(true);
 
 			}
 
@@ -513,12 +507,10 @@ public class Main extends javax.swing.JFrame implements ActionListener, ChangeLi
 	}
 
 	public void stateChanged(ChangeEvent e) {
-		// TODO Auto-generated method stub
 
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
 
 	}
 }
