@@ -62,8 +62,6 @@ public class Main extends javax.swing.JFrame implements ActionListener, ChangeLi
 
 	private static NuevoTag nt;
 
-	private static EditTag edit;
-
 	private void ponerTexto(String texto) {
 
 		if (!cadenas.isEmpty() && !atajos.isEmpty()) {
@@ -185,7 +183,9 @@ public class Main extends javax.swing.JFrame implements ActionListener, ChangeLi
 			public void itemStateChanged(ItemEvent arg0) {
 
 				if (comboBox.getSelectedItem() != null) {
+
 					String hotkeySeleccionado = comboBox.getSelectedItem().toString();
+
 					textField.setText(hotkeySeleccionado);
 				}
 			}
@@ -488,13 +488,9 @@ public class Main extends javax.swing.JFrame implements ActionListener, ChangeLi
 
 		catch (Exception e1) {
 
-			if (!(nt instanceof NuevoTag)) {
+			nt = new NuevoTag();
 
-				nt = new NuevoTag();
-
-				nt.setVisible(true);
-
-			}
+			nt.setVisible(true);
 
 		}
 

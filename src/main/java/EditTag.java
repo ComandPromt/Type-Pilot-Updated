@@ -403,7 +403,7 @@ public class EditTag extends javax.swing.JFrame implements ActionListener, Chang
 
 				Pattern pattern = Pattern.compile(".*" + search + ".*");
 
-				List<String> list = Main.getAtajos().stream().filter(e -> pattern.matcher(e).matches())
+				List<Object> list = Main.getAtajos().stream().filter(e -> pattern.matcher(e).matches())
 						.collect(Collectors.toList());
 
 				if (!list.isEmpty()) {
@@ -519,12 +519,10 @@ public class EditTag extends javax.swing.JFrame implements ActionListener, Chang
 	}
 
 	public void stateChanged(ChangeEvent e) {
-		// TODO Auto-generated method stub
 
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
 
 	}
 }
